@@ -7,7 +7,30 @@ import OTP from "./pages/OTP";
 import Register from "./pages/Register";
 import ResetPassword from "./pages/ResetPassword";
 import { ToastContainer } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { getUser } from "./store/slices/authSlice";
+import { fetchAllUsers } from "./store/slices/userSlice";
+import { fetchAllBooks } from "./store/slices/bookSlice";
+import {
+  fetchAllBorrowedBooks,
+  fetchUserBorrowedBooks,
+} from "./store/slices/borrowSlice";
+
 const App = () => {
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getUser());
+    dispatch(fetchAllBooks());
+    if (isAuthenticated && user?.role === "User") {
+      dispatch(fetchUserBorrowedBooks());
+    }
+    if (isAuthenticated && user?.role === "Admin") {
+      dispatch(fetchAllUsers());
+      dispatch(fetchAllBorrowedBooks());
+    }
+  }, [isAuthenticated]);
+
   return (
     <Router>
       <Routes>
